@@ -12,11 +12,9 @@ def step(length=64, A=1, n0=0):
     x[start:] = A
     return x
 
-def rectN(length=64, A=1, n0=0, width=10):
-    n = np.arange(length) - n0
-    N = width // 2
+def rectN(length=64, N=10, A=1, n0=0):
     x = np.zeros(length)
-    x[(n - n0 >= -N) & (n - n0 <= N)] = 1
+    x[(np.arange(length) - n0 >= -N) & (np.arange(length) - n0 <= N)] = 1
     return A * x
 
 def sgn(n, A=1, n0=0):
