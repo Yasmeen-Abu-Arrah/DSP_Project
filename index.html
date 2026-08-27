@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DSP Signal Analyzer</title>
+  <meta name="description" content="Interactive Digital Signal Processing tool — generate signals, compute DTFT, and visualize convolution.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@500;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- ───────── Top Bar ───────── -->
+  <nav class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <span class="brand-icon">📡</span>
+        <span class="brand-name">DSP Analyzer</span>
+      </div>
+      <div class="topbar-right">
+        <button id="downloadBtn" class="btn btn-outlined btn-blue">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          EXPORT PNG
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ───────── App ───────── -->
+  <div class="app">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+
+      <!-- Signal 1 -->
+      <div class="sticker-card">
+        <div class="sticker-header green">
+          <span class="sticker-num">1</span>
+          <span class="sticker-title">Signal x[n]</span>
+        </div>
+        <div class="sticker-body">
+          <div class="field">
+            <span class="field-label">Function</span>
+            <select id="func1">
+              <option value="impulse">Impulse δ[n]</option>
+              <option value="step">Unit Step u[n]</option>
+              <option value="ramp">Ramp r[n]</option>
+              <option value="exponential">Exponential aⁿ</option>
+              <option value="sinusoid">Sinusoid sin(2πf₀n)</option>
+            </select>
+          </div>
+          <div class="field">
+            <span class="field-label">Amplitude <strong id="scale1_val">1.0</strong></span>
+            <input type="range" id="scale1" min="-5" max="5" step="0.1" value="1" class="slider slider-green">
+          </div>
+          <div class="field">
+            <span class="field-label">Time Shift <strong id="shift1_val">0</strong></span>
+            <input type="range" id="shift1" min="-20" max="20" step="1" value="0" class="slider slider-green">
+          </div>
+          <div class="field freq-field" id="freq1_wrap">
+            <span class="field-label">Frequency <strong id="freq1_val">0.10</strong></span>
+            <input type="range" id="freq1" min="0" max="0.5" step="0.01" value="0.1" class="slider slider-green">
+          </div>
+        </div>
+      </div>
+
+      <!-- Signal 2 -->
+      <div class="sticker-card">
+        <div class="sticker-header blue">
+          <span class="sticker-num">2</span>
+          <span class="sticker-title">Signal h[n]</span>
+        </div>
+        <div class="sticker-body">
+          <div class="field">
+            <span class="field-label">Function</span>
+            <select id="func2">
+              <option value="impulse">Impulse δ[n]</option>
+              <option value="step" selected>Unit Step u[n]</option>
+              <option value="ramp">Ramp r[n]</option>
+              <option value="exponential">Exponential aⁿ</option>
+              <option value="sinusoid">Sinusoid sin(2πf₀n)</option>
+            </select>
+          </div>
+          <div class="field">
+            <span class="field-label">Amplitude <strong id="scale2_val">1.0</strong></span>
+            <input type="range" id="scale2" min="-5" max="5" step="0.1" value="1" class="slider slider-blue">
+          </div>
+          <div class="field">
+            <span class="field-label">Time Shift <strong id="shift2_val">0</strong></span>
+            <input type="range" id="shift2" min="-20" max="20" step="1" value="0" class="slider slider-blue">
+          </div>
+          <div class="field freq-field" id="freq2_wrap">
+            <span class="field-label">Frequency <strong id="freq2_val">0.10</strong></span>
+            <input type="range" id="freq2" min="0" max="0.5" step="0.01" value="0.1" class="slider slider-blue">
+          </div>
+        </div>
+      </div>
+
+      <!-- Settings -->
+      <div class="sticker-card">
+        <div class="sticker-header gray">
+          <span class="sticker-num">⚙</span>
+          <span class="sticker-title">Settings</span>
+        </div>
+        <div class="sticker-body">
+          <div class="field">
+            <span class="field-label">Signal Length <strong id="sigLen_val">64</strong></span>
+            <input type="range" id="sigLen" min="8" max="128" step="1" value="64" class="slider slider-gray">
+          </div>
+          <div class="field">
+            <span class="field-label">DTFT Points <strong id="dtftPts_val">1024</strong></span>
+            <input type="range" id="dtftPts" min="256" max="2048" step="256" value="1024" class="slider slider-gray">
+          </div>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- Main content -->
+    <main class="main">
+      <!-- Row 1 -->
+      <div class="row-header">
+        <span class="pill pill-green">x[n]</span>
+        <span class="row-line"></span>
+      </div>
+      <div class="plot-row">
+        <div class="plot-sticker" id="plot1"></div>
+        <div class="plot-sticker" id="plot2"></div>
+      </div>
+
+      <!-- Row 2 -->
+      <div class="row-header">
+        <span class="pill pill-blue">h[n]</span>
+        <span class="row-line"></span>
+      </div>
+      <div class="plot-row">
+        <div class="plot-sticker" id="plot3"></div>
+        <div class="plot-sticker" id="plot4"></div>
+      </div>
+
+      <!-- Row 3 -->
+      <div class="row-header">
+        <span class="pill pill-purple">y[n] = x ∗ h</span>
+        <span class="row-line"></span>
+      </div>
+      <div class="plot-row">
+        <div class="plot-sticker" id="plot5"></div>
+        <div class="plot-sticker" id="plot6"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- CDN -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
