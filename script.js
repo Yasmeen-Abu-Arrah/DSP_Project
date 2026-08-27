@@ -53,6 +53,30 @@
     return x;
   }
 
+  function cosinusoid(N, A, n0, f = 0.1) {
+    const x = new Float64Array(N);
+    for (let i = 0; i < N; i++) x[i] = A * Math.cos(2 * Math.PI * f * (i - n0));
+    return x;
+  }
+
+  function rectN(N, A, n0, width = 10) {
+    const x = new Float64Array(N);
+    for (let i = 0; i < N; i++) {
+      const m = i - n0;
+      x[i] = (m >= 0 && m < width) ? A : 0;
+    }
+    return x;
+  }
+
+  function sgn(N, A, n0) {
+    const x = new Float64Array(N);
+    for (let i = 0; i < N; i++) {
+      const m = i - n0;
+      x[i] = Math.sign(m) * A;
+    }
+    return x;
+  }
+
   function gen(type, N, A, n0, freq) {
     switch (type) {
       case "impulse":     return impulse(N, A, n0);
@@ -60,6 +84,9 @@
       case "ramp":        return ramp(N, A, n0);
       case "exponential": return exponential(N, A, n0);
       case "sinusoid":    return sinusoid(N, A, n0, freq);
+      case "cosinusoid":  return cosinusoid(N, A, n0, freq);
+      case "rectN":       return rectN(N, A, n0, 10);
+      case "sgn":         return sgn(N, A, n0);
       default: return new Float64Array(N);
     }
   }

@@ -12,6 +12,17 @@ def step(length=64, A=1, n0=0):
     x[start:] = A
     return x
 
+def rectN(length=64, A=1, n0=0, width=10):
+    n = np.arange(length) - n0
+    N = width // 2
+    x = np.zeros(length)
+    x[(n - n0 >= -N) & (n - n0 <= N)] = 1
+    return A * x
+
+def sgn(n, A=1, n0=0):
+    x = np.sign(n - n0)
+    return A * x
+
 def ramp(length=64, A=1, n0=0):
     n = np.arange(length) - n0
     return A * n * (n >= 0)
@@ -24,6 +35,10 @@ def sinusoid(length=64, A=1, n0=0, f=0.1):
     n = np.arange(length) - n0
     return A * np.sin(2 * np.pi * f * n)
 
+def cosinusoid(length=64, A=1, n0=0, f=0.1):
+    n = np.arange(length) - n0
+    return A * np.cos(2 * np.pi * f * n)
+
 def generate_signal(func_name, A=1, n0=0, freq=None, length=64):
     if func_name == "impulse":
         return impulse(length, A, n0)
@@ -35,6 +50,12 @@ def generate_signal(func_name, A=1, n0=0, freq=None, length=64):
         return exponential(length, A, n0)
     if func_name == "sinusoid":
         return sinusoid(length, A, n0, f=freq or 0.1)
+    if func_name == "rectN":
+        return rectN(length, A, n0, width=10)
+    if func_name == "cosinusoid":
+        return cosinusoid(length, A, n0, f=freq or 0.1)
+    if func_name == "sgn":
+        return sgn(np.arange(length), A=A, n0=n0)
     raise ValueError(f"Unknown function {func_name}")
 
 def compute_dtft(signal, num_points=1024):
