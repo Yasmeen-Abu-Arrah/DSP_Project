@@ -59,14 +59,14 @@
     return x;
   }
 
-  function rectN(N, A, n0, width = 10) {
-    const x = new Float64Array(N);
-    for (let i = 0; i < N; i++) {
-      const m = i - n0;
-      x[i] = (m >= 0 && m < width) ? A : 0;
-    }
-    return x;
+  function rectN(N, A, n0, width) {
+  const x = new Float64Array(N);
+  for (let i = 0; i < N; i++) {
+    const m = i - n0;              // نطبق الـ shift أولاً
+    x[i] = (m >= -width && m <= width) ? A : 0;   // تناظر حول الصفر بعد الـ shift
   }
+  return x;
+}
 
   function sgn(N, A, n0) {
     const x = new Float64Array(N);

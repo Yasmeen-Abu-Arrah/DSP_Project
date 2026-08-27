@@ -12,9 +12,10 @@ def step(length=64, A=1, n0=0):
     x[start:] = A
     return x
 
-def rectN(length=64, N=10, A=1, n0=0):
+def rectN(length=64, A=1, n0=0, N=2):
+    n = np.arange(length)
     x = np.zeros(length)
-    x[(np.arange(length) - n0 >= -N) & (np.arange(length) - n0 <= N)] = 1
+    x[(n - n0 >= -N) & (n - n0 <= N)] = 1
     return A * x
 
 def sgn(n, A=1, n0=0):
@@ -37,7 +38,7 @@ def cosinusoid(length=64, A=1, n0=0, f=0.1):
     n = np.arange(length) - n0
     return A * np.cos(2 * np.pi * f * n)
 
-def generate_signal(func_name, A=1, n0=0, freq=None, length=64):
+def generate_signal(func_name, A=1, n0=0, freq=None, N=2,length=64):
     if func_name == "impulse":
         return impulse(length, A, n0)
     if func_name == "step":
@@ -49,7 +50,7 @@ def generate_signal(func_name, A=1, n0=0, freq=None, length=64):
     if func_name == "sinusoid":
         return sinusoid(length, A, n0, f=freq or 0.1)
     if func_name == "rectN":
-        return rectN(length, A, n0, width=10)
+        return rectN(length, A, n0, N)
     if func_name == "cosinusoid":
         return cosinusoid(length, A, n0, f=freq or 0.1)
     if func_name == "sgn":
