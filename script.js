@@ -66,7 +66,8 @@
     x[i] = (m >= -width && m <= width) ? A : 0;   // تناظر حول الصفر بعد الـ shift
   }
   return x;
-}
+ }
+
 
   function sgn(N, A, n0) {
     const x = new Float64Array(N);
@@ -77,19 +78,19 @@
     return x;
   }
 
-  function gen(type, N, A, n0, freq) {
-    switch (type) {
-      case "impulse":     return impulse(N, A, n0);
-      case "step":        return step(N, A, n0);
-      case "ramp":        return ramp(N, A, n0);
-      case "exponential": return exponential(N, A, n0);
-      case "sinusoid":    return sinusoid(N, A, n0, freq);
-      case "cosinusoid":  return cosinusoid(N, A, n0, freq);
-      case "rectN":       return rectN(N, A, n0, 10);
-      case "sgn":         return sgn(N, A, n0);
-      default: return new Float64Array(N);
-    }
+  function gen(type, N, A, n0, freq, width) {
+  switch (type) {
+    case "impulse":     return impulse(N, A, n0);
+    case "step":        return step(N, A, n0);
+    case "ramp":        return ramp(N, A, n0);
+    case "exponential": return exponential(N, A, n0);
+    case "sinusoid":    return sinusoid(N, A, n0, freq);
+    case "cosinusoid":  return cosinusoid(N, A, n0, freq);
+    case "rectN":       return rectN(N, A, n0, width);
+    case "sgn":         return sgn(N, A, n0);
+    default: return new Float64Array(N);
   }
+}
 
   /* ── DTFT — direct definition (no FFT) ────────────────────── */
   function dtft(sig, pts) {
@@ -202,11 +203,11 @@
      ════════════════════════════════════════════════════════════ */
 
   function updateAll() {
-    const N   = +$("sigLen").value;
-    const pts = +$("dtftPts").value;
+  const N   = +$("sigLen").value;
+  const pts = +$("dtftPts").value;
 
-    const x = gen($("func1").value, N, +$("scale1").value, +$("shift1").value, +$("freq1").value);
-    const h = gen($("func2").value, N, +$("scale2").value, +$("shift2").value, +$("freq2").value);
+  const x = gen($("func1").value, N, +$("scale1").value, +$("shift1").value, +$("freq1").value, +$("width1").value);
+  const h = gen($("func2").value, N, +$("scale2").value, +$("shift2").value, +$("freq2").value, +$("width2").value);
     const y = convolve(x, h);
 
     const Xd = dtft(x, pts);
@@ -249,14 +250,17 @@
   bind("freq2",   "freq2_val",   v => (+v).toFixed(2));
   bind("sigLen",  "sigLen_val");
   bind("dtftPts", "dtftPts_val");
+  bind("width1", "width1_val");
+  bind("width2", "width2_val");
 
-  function toggleFreq(selId, wrapId) {
-    const w = $(wrapId);
-    $(selId).value === "sinusoid" ? w.classList.add("visible") : w.classList.remove("visible");
-  }
+  function toggleExtra(funcId, freqWrapId, widthWrapId) {
+  const val = $(funcId).value;
+  $(freqWrapId).classList.toggle("visible", val === "sinusoid" || val === "cosinusoid");
+  $(widthWrapId).classList.toggle("visible", val === "rectN");
+}
 
-  $("func1").addEventListener("change", () => { toggleFreq("func1", "freq1_wrap"); updateAll(); });
-  $("func2").addEventListener("change", () => { toggleFreq("func2", "freq2_wrap"); updateAll(); });
+$("func1").addEventListener("change", () => { toggleExtra("func1", "freq1_wrap", "width1_wrap"); updateAll(); });
+$("func2").addEventListener("change", () => { toggleExtra("func2", "freq2_wrap", "width2_wrap"); updateAll(); });
 
   /* ── Export combined PNG ───────────────────────────────────── */
   $("downloadBtn").addEventListener("click", async () => {
@@ -280,8 +284,8 @@
   });
 
   /* ── Init ──────────────────────────────────────────────────── */
-  toggleFreq("func1", "freq1_wrap");
-  toggleFreq("func2", "freq2_wrap");
-  updateAll();
+toggleExtra("func1", "freq1_wrap", "width1_wrap");
+toggleExtra("func2", "freq2_wrap", "width2_wrap");
+updateAll();
 
 })();

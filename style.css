@@ -244,6 +244,9 @@ body {
 .freq-field { display: none; }
 .freq-field.visible { display: flex; }
 
+.rect-field { display: none; }
+.rect-field.visible { display: flex; }
+
 /* ── Main Content ─────────────────────────────────────────────── */
 .main {
   flex: 1;
